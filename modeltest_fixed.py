@@ -8,15 +8,111 @@ import pandas as pd
 from diffusers import DiffusionPipeline
 
 # ============================================================
+# instructions for linux
+# ============================================================
+
+sudo apt update
+
+sudo apt install -y \
+    python3.11 \
+    python3.11-venv \
+    python3-pip \
+    git \
+    build-essential \
+    wget
+
+mkdir -p ~/PictureAI
+cd ~/PictureAI
+
+python3.11 -m venv .venv
+
+source .venv/bin/activate
+
+python -m pip install --upgrade pip
+python -m pip install "setuptools<81" wheel
+
+python -m pip install \
+    torch==2.5.1 \
+    torchvision==0.20.1 \
+    torchaudio==2.5.1 \
+    --index-url https://download.pytorch.org/whl/cu121
+
+python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA:', torch.cuda.is_available()); print('GPU:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'Not found')"
+
+python -m pip install \
+    diffusers==0.30.3 \
+    transformers==4.45.2 \
+    accelerate==1.0.1 \
+    safetensors \
+    pandas \
+    openpyxl \
+    pillow \
+    sentencepiece
+
+python -m pip install timm fairscale
+
+python -m pip install \
+    --no-build-isolation \
+    --no-deps \
+    git+https://github.com/THUDM/ImageReward.git
+
+python -m pip install hpsv2
+
+# опциональноб если не будет работать
+
+HPS_DIR=$(python -c "import hpsv2, pathlib; print(pathlib.Path(hpsv2.__file__).parent / 'src' / 'open_clip')")
+
+mkdir -p "$HPS_DIR"
+
+wget \
+    "https://huggingface.co/spaces/xswu/HPSv2/resolve/main/src/open_clip/bpe_simple_vocab_16e6.txt.gz" \
+    -O "$HPS_DIR/bpe_simple_vocab_16e6.txt.gz"
+
+sha256sum "$HPS_DIR/bpe_simple_vocab_16e6.txt.gz"
+
+python -m pip install --no-deps \
+    transformers==4.45.2 \
+    diffusers==0.30.3
+
+# ============================================================
 # MODELS
 # ============================================================
 
-MODEL_IDS = [
+
+MODEL_IDS1 = [
     "segmind/tiny-sd",
     "optimum-intel-internal-testing/tiny-stable-diffusion-torch-custom-variant",
     "stable-diffusion-v1-5/stable-diffusion-v1-5",
     "stabilityai/sd-turbo",
     "stabilityai/stable-diffusion-xl-base-1.0",
+]
+
+MODEL_IDS = [
+    # Qwen Image — 20B parameters
+    "Qwen/Qwen-Image",
+    "Qwen/Qwen-Image-2512",
+
+    # HiDream — large image generation model
+    "HiDream-ai/HiDream-I1-Full",
+
+    # FLUX — 12B parameters each
+    "black-forest-labs/FLUX.1-dev",
+    "black-forest-labs/FLUX.1-schnell",
+
+    # Stable Diffusion 3.5 — 8B parameters
+    "stabilityai/stable-diffusion-3.5-large",
+
+    # Z-Image
+    "Tongyi-MAI/Z-Image",
+
+    # Kolors
+    "Kwai-Kolors/Kolors",
+
+    # Stable Diffusion XL
+    "stabilityai/stable-diffusion-xl-base-1.0",
+
+    # Lumina Image 2.0 — 3B parameters
+    "Alpha-VLLM/Lumina-Image-2.0",
 ]
 
 # ============================================================
